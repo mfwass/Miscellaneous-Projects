@@ -1,5 +1,5 @@
 # Miscellaneous Projects
 Miscellaneous Projects
 
-# LICENSE
+# License
 See [here](LICENSE.md) for licensing info.
