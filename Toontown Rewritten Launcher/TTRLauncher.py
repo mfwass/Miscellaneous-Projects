@@ -112,7 +112,7 @@ class BasicLauncher():
             print banner
             sys.exit(0)
         else:
-            # 
+            # Unknown error, print out the raw response.
             print "Unknown error. This may be caused by a new message type being added and not implemented into the launcher."
             print "JSON response: %s" % jsonresponse
 
@@ -122,36 +122,50 @@ class BasicLauncher():
 
         # Add a / to the path.
         path = currPath + "/"
+
         # Set env variables
         os.environ['TTR_PLAYCOOKIE'] = cookie
         os.environ['TTR_GAMESERVER'] = gameserver
+
         # Open the game.
+        # Windows
         if sys.platform == 'win32':
             # Check if files are installed
             try:
                 game = subprocess.Popen('./TTREngine')
             except:
+                # Files not installed
                 print "ERROR: This script will only launch the game using previously installed files. Please install TTR and try again.\nIf TTR is already installed, please put this script in the location of your currently installed files.\nThis script is located at %s" % path
                 sys.exit(1)
+
+        # Mac (<3)
         elif sys.platform == 'darwin':
             # Check if game files are installed
             try:
                 # Getting this to open successfully made me hate python with a bloody passion
                 game = os.system("export DYLD_LIBRARY_PATH='%s'Libraries.bundle\n'%s'./Toontown\ Rewritten" % (path, path))
             except:
+                # Files not installed
                 print "ERROR: This script will only launch the game using previously installed files. Please install TTR and try again.\nIf TTR is already installed, please put this script in the location of your currently installed files.\nThis script is located at %s" % path
                 sys.exit(1)
+
+        # Linux
         elif sys.platform == 'linux':
+            # Check if game files are installed
             try:
                 game = subprocess.Popen('./TTREngine')
             except:
+                # Files not installed
                 print "ERROR: This script will only launch the game using previously installed files. Please install TTR and try again."
                 sys.exit(1)
+
         if game != 0:
             # rip crash
             print "\n\nOh no! You crashed! Play again?"
             return
+        # No other issues, ask if they want to play again. :)
         print "\n\nPlay again? :D"
         return
 
+# Call the main class
 BasicLauncher()
