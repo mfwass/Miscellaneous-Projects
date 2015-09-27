@@ -19,11 +19,14 @@ import getpass
 import sys
 
 class BasicLauncher():
+
     def __init__(self):
         # Get credentials
         username = raw_input('Username: ')
+
         # Use getpass instead of raw_input to hide inputted text.
         password = getpass.getpass()
+
         # Post credentials
         connectionInfo = self.postStuff(username=username, password=password)
 
@@ -35,60 +38,88 @@ class BasicLauncher():
             # Gotta provide a username/password
             print "ERROR: Please provide a username or password."
             sys.exit(1)
+
         self.connection = httplib.HTTPSConnection('www.toontownrewritten.com', 443)
         headers = {'Content-type': 'application/x-www-form-urlencoded'}
         self.connection.request('POST', '/api/login?format=json', params, headers)
         response = self.connection.getresponse()
         jsonresponse = json.loads(response.read())
         success = jsonresponse.get('success', 'false')
+
+        # Begin checking response type
         if success == 'true':
+            # Successful login
+            # Get gameserver and token from response.
             gameserver = jsonresponse.get('gameserver', None)
             cookie = jsonresponse.get('cookie', None)
+            
+            # A print showing cookie and gameserver
             print "Successful response.\nCookie = %s\nGame Server = %s\n" % (cookie, gameserver)
+
+            # Continue onward to launch game
             self.launchGame(gameserver=gameserver, cookie=cookie)
+
         elif success == 'delayed':
-            # They're delayed, so lets use their queue token
+            # They're delayed, so lets grab their queue token, eta and position.
             queueToken = jsonresponse.get('queueToken', None)
             eta = jsonresponse.get('eta', None)
             position = jsonresponse.get('position', None)
+
+            # Print to tell the user they're in the queue.
             print "Delayed response.\nQueue token = %s\nETA = %s\nPosition = %s\n" % (queueToken, eta, position)
+
+            # Set up params for contacting the server again.
             params = urllib.urlencode({'queueToken': queueToken})
+
             # ugly, todo make pretty.
             while success == 'delayed':
                 # So we aren't spamming the login server, request every two seconds.
                 time.sleep(2)
+                # Establish connection
                 self.connection = httplib.HTTPSConnection('www.toontownrewritten.com', 443)
                 headers = {'Content-type': 'application/x-www-form-urlencoded'}
+
+                # Post our queue token
                 self.connection.request('POST', '/api/login?format=json', params, headers)
-                # read response.
+
+                # Read response.
                 response = self.connection.getresponse()
                 jsonresponse = json.loads(response.read())
+
+                # Check whether successful or not.
                 success = jsonresponse.get('success', 'false')
                 if success == 'true':
                     print "Server responded, successful login. Launching game...\n\n"
-                    # woohoo, we're in! Let's grab those env variables 
+                    # Woohoo, we're in! Let's grab those env variables 
                     # and get this party started.
                     gameserver = jsonresponse.get('gameserver', None)
                     cookie = jsonresponse.get('cookie', None)
-                    # launch game.
+
+                    # Launch game.
                     self.launchGame(gameserver=gameserver, cookie=cookie)
                 else:
                     # Just incase the server changes its mind.
                     print "Something went wrong, please try again."
                     sys.exit(0)
+
         elif success == 'partial':
+            # Two step login/ToonGuard token.
             raise NotImplementedError("Two-step login is not implemented at this time")
+
         elif success == 'false':
+            # No success, grab the reason why and print.
             banner = jsonresponse.get('banner', None)
             print banner
             sys.exit(0)
         else:
+            # 
             print "Unknown error. This may be caused by a new message type being added and not implemented into the launcher."
             print "JSON response: %s" % jsonresponse
 
     def launchGame(self, gameserver=None, cookie=None):
         # Get current script location
         currPath = os.getcwd()
+
         # Add a / to the path.
         path = currPath + "/"
         # Set env variables
