@@ -132,7 +132,8 @@ class BasicLauncher():
         if sys.platform == 'win32':
             # Check if files are installed
             try:
-                game = subprocess.Popen('./TTREngine')
+                os.chdir(os.path.join(os.environ['PROGRAMFILES'], 'Toontown Rewritten'))
+                game = os.system('TTREngine.exe')
             except:
                 # Files not installed
                 print "ERROR: This script will only launch the game using previously installed files. Please install TTR and try again.\nIf TTR is already installed, please put this script in the location of your currently installed files.\nThis script is located at %s" % path
