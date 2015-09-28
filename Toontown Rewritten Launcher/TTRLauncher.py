@@ -4,8 +4,6 @@
 # This scripts purpose is to launch Toontown Rewritten and nothing more
 # This launcher is fan-made, TTR cannot be held liable for any issues
 # with its usage. This script was tested on mac only.
-# 
-# TODO: Check default TTR installation path.
 #
 # Enjoy - <3 mfwass.
 
