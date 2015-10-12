@@ -1,0 +1,6 @@
+*.mf
+logs/
+Libraries.bundle
+Toontown Rewritten
+*.json
+*.bin
