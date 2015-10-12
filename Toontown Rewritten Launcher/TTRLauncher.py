@@ -15,10 +15,17 @@ import time
 import subprocess
 import getpass
 import sys
+import patcher
 
-class BasicLauncher():
+class BasicLauncher:
 
     def __init__(self):
+        # Check for updates
+        patcher.Patcher()
+
+        # Clear the window.
+        print "\n\n"
+
         # Get credentials
         username = raw_input('Username: ')
 
