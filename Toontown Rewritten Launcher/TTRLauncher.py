@@ -133,6 +133,7 @@ class BasicLauncher:
         os.environ['TTR_GAMESERVER'] = gameserver
 
         # Open the game.
+        game = 0
         # Windows
         if sys.platform == 'win32':
             # Check if files are installed
