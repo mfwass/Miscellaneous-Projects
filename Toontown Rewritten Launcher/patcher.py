@@ -35,7 +35,7 @@ class Patcher:
             self.mirrorList = json.loads(self.mirrors.read())
 
         # Tell how many mirrors we have
-        print "Obtained %s mirrors." % len(self.mirrorList)
+        print "Obtained %s mirror(s)." % len(self.mirrorList)
 
         # we've come back for you patchmanifest.txt
         manifest = urllib2.urlopen(manifest_url).read()
